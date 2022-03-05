@@ -3,25 +3,36 @@ package com.tenniscourts.reservations;
 import com.tenniscourts.config.BaseRestController;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+@RestController
+@RequestMapping("/reservations")
 @AllArgsConstructor
 public class ReservationController extends BaseRestController {
 
     private final ReservationService reservationService;
 
-    public ResponseEntity<Void> bookReservation(CreateReservationRequestDTO createReservationRequestDTO) {
-        return ResponseEntity.created(locationByEntity(reservationService.bookReservation(createReservationRequestDTO).getId())).build();
+    @PostMapping
+    public ResponseEntity<Void> bookReservation(@RequestBody CreateReservationRequestDTO createReservationRequestDTO) {
+        return ResponseEntity
+                .created(locationByEntity(reservationService.bookReservation(createReservationRequestDTO).getId()))
+                .build();
     }
 
-    public ResponseEntity<ReservationDTO> findReservation(Long reservationId) {
+    @GetMapping("/{id}")
+    public ResponseEntity<ReservationDTO> findReservation(@PathVariable("id") Long reservationId) {
         return ResponseEntity.ok(reservationService.findReservation(reservationId));
     }
 
-    public ResponseEntity<ReservationDTO> cancelReservation(Long reservationId) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ReservationDTO> cancelReservation(@PathVariable("id") Long reservationId) {
         return ResponseEntity.ok(reservationService.cancelReservation(reservationId));
     }
 
-    public ResponseEntity<ReservationDTO> rescheduleReservation(Long reservationId, Long scheduleId) {
+    @PutMapping("/{reservationId}/{scheduleId}")
+    public ResponseEntity<ReservationDTO> rescheduleReservation(
+            @PathVariable("reservationId") Long reservationId,
+            @PathVariable("scheduleId") Long scheduleId) {
         return ResponseEntity.ok(reservationService.rescheduleReservation(reservationId, scheduleId));
     }
 }
